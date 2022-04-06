@@ -7,7 +7,7 @@ from tensorflow import keras
 from tensorflow.keras.layers import BatchNormalization, Dense
 
 class DeepQAgent(Agent):
-    def __init__(self, observation_space, action_space, alpha=.2, gamma=.9, random=0, buffer_size=1000, batch_size=32):
+    def __init__(self, observation_space, action_space, alpha=.2, gamma=.9, random=0, buffer_size=500, batch_size=16):
         super().__init__(observation_space, action_space, random)
 
         self.lastPrediction = None
@@ -77,3 +77,10 @@ class DeepQAgent(Agent):
         model.trainable = True
         return model
 
+    def save(self, name):
+        path = "Saves/" + name + ".h5"
+        self.Q.save(path)
+
+    def load(self, name):
+        path = "Saves/" + name + ".h5"
+        self.Q = tf.keras.load_model(path)

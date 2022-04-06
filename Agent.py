@@ -18,3 +18,9 @@ class Agent:
     def update(self, new_state, reward) -> None:
         pass
 
+    def save(self, name):
+        pass
+
+    def load(self, name):
+        pass
+

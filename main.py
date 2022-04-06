@@ -29,6 +29,7 @@ def train(epochs=1_000, render_every=100, save_every=100):
             agent.update(observation, reward)
         rewards.append(sum_reward)
         if e % save_every == 0:
+            agent.save("deepQ")
             print(np.max(rewards[e-save_every:e]), np.average(rewards[e-save_every:e]))
 
     env.close()
