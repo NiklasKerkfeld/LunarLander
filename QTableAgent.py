@@ -33,8 +33,8 @@ class QTable:
         assert isinstance(self.spaces, np.ndarray), f"loaded spaces has wrong Type {type(self.spaces)}"
 
 class QTableAgent(Agent):
-    def __init__(self, observation_space, action_space, chunks=10, alpha=.1, gamma=.9, beta=1, random=.0):
-        super().__init__(observation_space, action_space, random=random)
+    def __init__(self, observation_space, action_space, chunks=10, alpha=.1, gamma=.9, beta=1, epsilon=.0):
+        super().__init__(observation_space, action_space, epsilon=epsilon)
         self.action_space = action_space
         self.alpha = alpha
         self.gamma = gamma
@@ -43,7 +43,7 @@ class QTableAgent(Agent):
 
     def step(self, state: np.ndarray) -> int:
         self.lastState = state
-        if np.random.randint(100) / 100 >= self.random:
+        if np.random.randint(100) / 100 >= self.epsilon:
             action_values = self.qTable[state]
             self.lastAction = int(np.argmax(action_values))
         else:
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     start, end = -2, 2
     observation_space = [[start, end]] * 4
     action_space = 4
-    agent = QTableAgent(observation_space, action_space, random=.5)
+    agent = QTableAgent(observation_space, action_space, epsilon=.5)
 
     obs = np.random.randn(8)
     print(obs)
