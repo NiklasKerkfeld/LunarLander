@@ -11,9 +11,6 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.layers import BatchNormalization, Dense
 
-log = Log()
-
-
 class DeepQAgent(Agent):
     def __init__(self, observation_space, action_space, alpha=.1, gamma=.999, gamma_decay=3e-4, epsilon=0, epsilon_min=0, theta=1,
                  learning_rate=0.001, buffer_size=1000, batch_size=16, transfer_every=250):
@@ -99,47 +96,7 @@ class DeepQAgent(Agent):
         assert x_train.shape == (self.batch_size, self.observation_space), f"x_train has shape {x_train.shape}"
         assert y_train.shape == (self.batch_size, self.action_space), f"y_train has shape {y_train.shape}"
 
-        log(x_train, y_train)
-
         return x_train, y_train
-
-
-    def create_trainingsset(self):
-        logs = []
-
-        start = time.time()
-        batch = random.sample(self.memory, self.batch_size)
-        x, y = [], []
-        logs.append(f"sample: {time.time() - start}")
-
-        start_iteration = time.time()
-        for state, action, reward, new_state in batch:
-
-            start = time.time()
-            x.append(state[0])
-            logs.append(f"append state: {time.time() - start}")
-
-            start = time.time()
-            target = self.operationNetwork.predict(state)[0]
-            logs.append(f"predict target: {time.time() - start}")
-
-            start = time.time()
-            assert target.shape == (2,), f"y has the wrong shape ({target.shape})"
-            logs.append(f"assert: {time.time() - start}")
-
-            start = time.time()
-            target[action] = reward if reward == -1 else reward + self.gamma * np.max(self.operationNetwork.predict(new_state))
-            logs.append(f"set new target: {time.time() - start}")
-
-            start = time.time()
-            y.append(target)
-            logs.append(f"append target: {time.time() - start}")
-
-        logs.append(f"batch: {time.time() - start_iteration}")
-        log.log(logs)
-
-        return np.array(x), np.array(y)
-
 
     def get_model(self):
         # Create a simple model.
