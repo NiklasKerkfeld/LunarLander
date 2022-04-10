@@ -33,7 +33,7 @@ class LoadingBar:
         self.last = time.time()
         avg_time = np.round(np.average(self.step_times[-rolling:]), decimals=2) if self.step_times else '-'
         needed = time.time() - self.start
-        approx_left = ((needed / step) * all) - needed
+        approx_left = (all - step) * avg_time
         procent = int(step/all * 1000)
         avg_loss = np.round(np.average(loss[-rolling:]), decimals=4) if loss else '-'
         average = np.round(np.average(scores[-rolling:]), decimals=2) if scores else '-'

@@ -1,15 +1,13 @@
 import random
-import time
-
 import numpy as np
-from collections import deque
-
-from Agent import Agent
-from Helper import Log
-
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.layers import BatchNormalization, Dense
+
+from Agent import Agent
+from Helper import Log
+from Memory import Memory
+
 
 class DeepQAgent(Agent):
     def __init__(self, observation_space, action_space, alpha=.1, gamma=.999, gamma_decay=3e-4, epsilon=0, epsilon_min=0, theta=1,
@@ -149,44 +147,6 @@ class DeepQAgent(Agent):
               f"buffer: {self.buffer_size}\n"
               f"transfer_every: {self.transfer_every}\n\n")
 
-
-class Memory:
-    def __init__(self, buffer_size, batch_size, observation_space, action_space):
-        self.buffer_size = buffer_size
-        self.batch_size = batch_size
-        self.observation_space = observation_space
-        self.action_space = action_space
-        self.pointer = 0
-        self.size = 0
-
-        self.states = np.zeros(shape=(buffer_size, observation_space))
-        self.actions = np.zeros(shape=(buffer_size, ), dtype=np.int32)
-        self.rewards = np.zeros(shape=(buffer_size,))
-        self.new_states = np.zeros(shape=(buffer_size, observation_space))
-        self.dones = np.zeros(shape=(buffer_size,))
-
-    def append(self, state, action, reward, done, new_state):
-
-        assert state.shape == (self.observation_space, ), f"appended state hase wrong shape ({state.shape})"
-        assert new_state.shape == (self.observation_space,), f"appended new_state hase wrong shape ({new_state.shape})"
-        assert isinstance(action, int), f"appended action hase wrong type ({type(action)})"
-        # assert reward == 1 or reward == -1, f"appended reward is not in [1, -1] ({reward})"
-        assert isinstance(done, bool) or isinstance(done, np.bool_), f"appended done hase wrong type ({type(done)})"
-
-        self.size = min(self.size + 1, self.buffer_size)
-        self.pointer = (self.pointer + 1) % self.buffer_size
-        self.states[self.pointer] = state
-        self.actions[self.pointer] = action
-        self.rewards[self.pointer] = reward
-        self.new_states[self.pointer] = new_state
-        self.dones[self.pointer] = done
-
-    def batch(self):
-        assert self.size >= self.batch_size, f"not enough datapoints in Memory have {self.size}"
-
-        sample = np.random.randint(0, self.size, self.batch_size)
-
-        return np.array(self.states[sample]), self.actions[sample], self.rewards[sample], self.dones[sample], np.array(self.new_states[sample])
 
 
 if __name__ == '__main__':
